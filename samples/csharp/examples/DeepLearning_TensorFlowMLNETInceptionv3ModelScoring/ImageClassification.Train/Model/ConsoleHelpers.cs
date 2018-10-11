@@ -58,7 +58,7 @@ namespace ImageClassification.Model
             Console.ForegroundColor = labelColor;
             Console.Write(PredictedLabel);
             Console.ForegroundColor = defaultForeground;
-            Console.Write(" with probability ");
+            Console.Write(" with score ");
             Console.ForegroundColor = probColor;
             Console.Write(Probability);
             Console.ForegroundColor = defaultForeground;

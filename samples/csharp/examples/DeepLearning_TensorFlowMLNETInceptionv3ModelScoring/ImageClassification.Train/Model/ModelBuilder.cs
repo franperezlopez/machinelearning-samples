@@ -56,7 +56,7 @@ namespace ImageClassification.Model
 
             var sdcaContext = new MulticlassClassificationContext(env);
             MulticlassLogisticRegressionPredictor pred = null;
-            //var loss = new HingeLoss(new HingeLoss.Arguments() { Margin = 1 });
+            var loss = new HingeLoss(new HingeLoss.Arguments() { Margin = 1 });
 
             var reader = TextLoader.CreateReader(env,
                 ctx => (ImagePath: ctx.LoadText(0), Label: ctx.LoadText(1)));
@@ -94,22 +94,22 @@ namespace ImageClassification.Model
             var predictor = model.AsDynamic.MakePredictionFunction<ImageNetData, ImageNetStaticPrediction>(env);
             var testData = ImageNetData.ReadFromCsv(dataLocation, imagesFolder).ToList();
 
-            Console.WriteLine("Using same predictor object");
-            var temp = testData
-                .Select(td => (td, pred: predictor.Predict(td)))
-                .ToList();
-            var temp1 = temp[1].pred;
-            var temp2 = temp[2].pred;
-            var ntemp = new ImageNetStaticPrediction();
-            temp.ForEach(pr => ConsoleWriteImagePrediction(pr.td.ImagePath, pr.pred.PredictedLabel, pr.pred.Probability.Max()));
+            //Console.WriteLine("Using same predictor object");
+            //var temp = testData
+            //    .Select(td => (td, pred: predictor.Predict(td)))
+            //    .ToList();
+            //var temp1 = temp[1].pred;
+            //var temp2 = temp[2].pred;
+            //var ntemp = new ImageNetStaticPrediction();
+            //temp.ForEach(pr => ConsoleWriteImagePrediction(pr.td.ImagePath, pr.pred.PredictedLabel, pr.pred.Probability.Max()));
 
             Console.WriteLine(" ");
             Console.WriteLine("Copy predictor objector");
             testData
                 .Select(td => new { td, pred = predictor.Predict(td) })
-                .Select(pr => (pr.td.ImagePath, pr.pred.PredictedLabel, pr.pred.Probability))
+                .Select(pr => (pr.td.ImagePath, pr.pred.PredictedLabel, pr.pred.Score))
                 .ToList()
-                .ForEach(pr => ConsoleWriteImagePrediction(pr.ImagePath, pr.PredictedLabel, pr.Probability.Max()));
+                .ForEach(pr => ConsoleWriteImagePrediction(pr.ImagePath, pr.PredictedLabel, pr.Score.Max()));
 
             ConsoleWriteHeader("Save model to local file");
             ModelHelpers.DeleteAssets(outputModelLocation);
