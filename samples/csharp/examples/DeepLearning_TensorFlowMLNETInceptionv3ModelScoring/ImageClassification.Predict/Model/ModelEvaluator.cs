@@ -29,15 +29,19 @@ namespace ImageClassification.Model
             ConsoleWriteHeader("Loading model");
             Console.WriteLine($"Model loaded: {modelLocation}");
 
+            // Load the model
             ITransformer loadedModel;
             using (var f = new FileStream(modelLocation, FileMode.Open))
                 loadedModel = TransformerChain.LoadFrom(env, f);
 
-            var predictor = loadedModel.MakePredictionFunction<ImageNetData, ImageNetStaticPrediction>(env);
+            // Make prediction function (input = ImageNetData, output = ImageNetPrediction)
+            var predictor = loadedModel.MakePredictionFunction<ImageNetData, ImageNetPrediction>(env);
+            // Read csv file into List<ImageNetData>
             var testData = ImageNetData.ReadFromCsv(dataLocation, imagesFolder).ToList();
 
             ConsoleWriteHeader("Making classifications");
-            // There is a bug (), that always buffers the response from the predictor
+            // There is a bug (https://github.com/dotnet/machinelearning/issues/1138), 
+            // that always buffers the response from the predictor
             // so we have to make a copy-by-value op everytime we get a response
             // from the predictor
             testData
