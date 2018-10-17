@@ -13,8 +13,6 @@ namespace ImageClassification.ImageData
     {
         public float[] Score;
 
-        public float[] Probability;
-
         public string PredictedLabel;
     }
 
@@ -24,7 +22,6 @@ namespace ImageClassification.ImageData
         {
             Label = label;
             Score = pred.Score;
-            Probability = pred.Probability;
             PredictedLabel = pred.PredictedLabel;
         }
 

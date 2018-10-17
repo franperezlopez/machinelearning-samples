@@ -2,6 +2,7 @@
 using System.IO;
 using System.Threading.Tasks;
 using ImageClassification.Model;
+using static ImageClassification.Model.ConsoleHelpers;
 
 namespace ImageClassification.Predict
 {
@@ -22,9 +23,10 @@ namespace ImageClassification.Predict
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Exception: {ex.Message}");
+                ConsoleWriteException(ex.Message);
             }
-            Console.ReadKey();
+
+            ConsolePressAnyKey();
         }
     }
 }

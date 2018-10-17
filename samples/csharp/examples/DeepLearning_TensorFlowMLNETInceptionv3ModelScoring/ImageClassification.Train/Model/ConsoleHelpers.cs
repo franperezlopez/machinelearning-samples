@@ -64,7 +64,5 @@ namespace ImageClassification.Model
             Console.ForegroundColor = defaultForeground;
             Console.WriteLine("");
         }
-
     }
-
 }

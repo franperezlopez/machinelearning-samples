@@ -1,11 +1,7 @@
-﻿using Microsoft.ML.Legacy;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using ImageClassification.ImageData;
-using static ImageClassification.Model.ConsoleHelpers;
 using Microsoft.ML.Runtime.Data;
 using Microsoft.ML.Runtime.ImageAnalytics;
 using Microsoft.ML.Transforms;
@@ -13,8 +9,8 @@ using Microsoft.ML.Runtime;
 using Microsoft.ML;
 using Microsoft.ML.Trainers;
 using Microsoft.ML.Runtime.Learners;
-using Microsoft.ML.Core.Data;
 using Microsoft.ML.Runtime.Api;
+using static ImageClassification.Model.ConsoleHelpers;
 
 namespace ImageClassification.Model
 {
@@ -69,11 +65,11 @@ namespace ImageClassification.Model
                                 .Resize(ImageNetSettings.imageHeight, ImageNetSettings.imageWidth)
                                 .ExtractPixels(interleaveArgb: ImageNetSettings.channelsLast, offset: ImageNetSettings.mean)))
                 .Append(row => (row.Label, LabelToKey: row.Label.ToKey(), softmax2_pre_activation: row.input.ApplyTensorFlowGraph(featurizerModelLocation)))
-                .Append(row => (row.Label, preds: sdcaContext.Trainers.Sdca(row.LabelToKey, row.softmax2_pre_activation, maxIterations: 4, onFit: p => pred = p/*, loss: loss*/)))
+                .Append(row => (row.Label, preds: sdcaContext.Trainers.Sdca(row.LabelToKey, row.softmax2_pre_activation)))
                 .Append(row => (row.Label, 
                                 Score: row.preds.score, 
-                                PredictedLabel: row.preds.predictedLabel.ToValue(),
-                                Probability: row.preds.predictedLabel.ToVector()));
+                                PredictedLabel: row.preds.predictedLabel.ToValue()
+                                ));
 
             var dataSource = new MultiFileSource(dataLocation);
 
@@ -88,28 +84,6 @@ namespace ImageClassification.Model
             var metrics = sdcaContext.Evaluate(trainData, label: "LabelToKey", predictedLabel: "PredictedLabel");
             Console.WriteLine($"LogLoss is: {metrics.LogLoss}");
             Console.WriteLine($"PerClassLogLoss is: {String.Join(",", metrics.PerClassLogLoss.Select(c => c.ToString()))}");
-
-
-            ConsoleWriteHeader("Results from predictor");
-            var predictor = model.AsDynamic.MakePredictionFunction<ImageNetData, ImageNetStaticPrediction>(env);
-            var testData = ImageNetData.ReadFromCsv(dataLocation, imagesFolder).ToList();
-
-            //Console.WriteLine("Using same predictor object");
-            //var temp = testData
-            //    .Select(td => (td, pred: predictor.Predict(td)))
-            //    .ToList();
-            //var temp1 = temp[1].pred;
-            //var temp2 = temp[2].pred;
-            //var ntemp = new ImageNetStaticPrediction();
-            //temp.ForEach(pr => ConsoleWriteImagePrediction(pr.td.ImagePath, pr.pred.PredictedLabel, pr.pred.Probability.Max()));
-
-            Console.WriteLine(" ");
-            Console.WriteLine("Copy predictor objector");
-            testData
-                .Select(td => new { td, pred = predictor.Predict(td) })
-                .Select(pr => (pr.td.ImagePath, pr.pred.PredictedLabel, pr.pred.Score))
-                .ToList()
-                .ForEach(pr => ConsoleWriteImagePrediction(pr.ImagePath, pr.PredictedLabel, pr.Score.Max()));
 
             ConsoleWriteHeader("Save model to local file");
             ModelHelpers.DeleteAssets(outputModelLocation);

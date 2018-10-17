@@ -8,7 +8,7 @@ namespace ImageClassification.Train
 {
     public class Program
     {
-        static async Task Main(string[] args)
+        static void Main(string[] args)
         {
             var assetsPath = ModelHelpers.GetAssetsPath(@"..\..\..\assets");
 
@@ -19,17 +19,8 @@ namespace ImageClassification.Train
 
             try
             {
-                //var modelBuilderPipeline = new ModelTrainerPipeline(tagsTsv, imagesFolder, inceptionPb, imageClassifierZip);
-                //await modelBuilderPipeline.BuildAndTrain();
-
                 var modelBuilder = new ModelBuilder(tagsTsv, imagesFolder, inceptionPb, imageClassifierZip);
                 modelBuilder.BuildAndTrain();
-
-                //var modelEvaluator = new ModelEvaluator(
-                //    ModelHelpers.GetAssetsPath("data", "tags.tsv"),
-                //    ModelHelpers.GetAssetsPath("images"),
-                //    ModelHelpers.GetAssetsPath("model", "imageClassifier.zip"));
-                //await modelEvaluator.Evaluate();
             }
             catch (Exception ex)
             {

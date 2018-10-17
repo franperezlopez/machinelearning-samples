@@ -30,6 +30,7 @@ namespace ImageClassification.ImageData
     {
         public float Probability { get; set; }
 
+
         public void ConsoleWriteLine()
         {
             var defaultForeground = Console.ForegroundColor;
@@ -53,7 +54,6 @@ namespace ImageClassification.ImageData
         public string Label;
         public string PredictedLabel;
         public float[] Score;
-        public float[] Probability;
         public float[] softmax2_pre_activation;
         public float[] softmax2;
         public float[] output2;
